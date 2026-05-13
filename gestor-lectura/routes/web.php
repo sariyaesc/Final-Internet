@@ -42,8 +42,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('progress', ReadingProgressController::class)->except(['show']);
 
-    Route::resource('notes', NoteController::class)->except(['index', 'show']);
-    Route::get('/books/{book}/notes', [NoteController::class, 'index'])->name('notes.index');
-});
+    Route::resource('notes', NoteController::class)->except(['show']);
 
 require __DIR__ . '/auth.php';
+});

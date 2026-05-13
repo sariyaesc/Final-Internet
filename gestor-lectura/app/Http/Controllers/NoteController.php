@@ -9,20 +9,44 @@ use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
-    public function index(Book $book)
+    public function index(Request $request)
     {
-        $notes = $book->notes()
-                      ->where('user_id', Auth::id())
-                      ->latest()
-                      ->get();
-        return view('notes.index', compact('book', 'notes'));
+        $userId = Auth::id();
+
+        // Libros que el usuario tiene en su progreso
+        $misLibros = \App\Models\ReadingProgress::with('book')
+            ->where('user_id', $userId)
+            ->get()
+            ->pluck('book');
+
+        $query = Note::with('book')
+            ->where('user_id', $userId)
+            ->latest();
+
+        // Filtro por libro
+        if ($request->filled('book_id')) {
+            $query->where('book_id', $request->book_id);
+        }
+
+        $notes = $query->get();
+
+        return view('notes.index', compact('notes', 'misLibros'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $books = Book::all();
-        return view('notes.create', compact('books'));
+        // Solo libros que el usuario está leyendo actualmente
+        $books = \App\Models\ReadingProgress::with('book')
+            ->where('user_id', Auth::id())
+            ->where('status', 'reading')
+            ->get()
+            ->pluck('book');
+
+        $selectedBookId = $request->book_id;
+
+        return view('notes.create', compact('books', 'selectedBookId'));
     }
+
 
     public function store(Request $request)
     {
@@ -35,8 +59,8 @@ class NoteController extends Controller
         $validated['user_id'] = Auth::id();
         Note::create($validated);
 
-        return redirect()->route('notes.index', $validated['book_id'])
-                         ->with('success', 'Nota guardada.');
+        return redirect()->route('notes.index')
+                 ->with('success', 'Nota guardada.');
     }
 
     public function edit(Note $note)
@@ -58,7 +82,7 @@ class NoteController extends Controller
         $note->update($validated);
 
         return redirect()->route('notes.index', $note->book_id)
-                         ->with('success', 'Nota actualizada.');
+            ->with('success', 'Nota actualizada.');
     }
 
     public function destroy(Note $note)
@@ -68,6 +92,6 @@ class NoteController extends Controller
         $note->delete();
 
         return redirect()->route('notes.index', $book_id)
-                         ->with('success', 'Nota eliminada.');
+            ->with('success', 'Nota eliminada.');
     }
 }

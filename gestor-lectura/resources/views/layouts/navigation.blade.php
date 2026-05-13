@@ -24,6 +24,10 @@
                         📖 Mi Progreso
                     </x-nav-link>
 
+                    <x-nav-link :href="route('notes.index')" :active="request()->routeIs('notes.*')">
+                        📝 Notas
+                    </x-nav-link>
+
                     @if(auth()->user()->isAdmin())
                     <x-nav-link :href="route('books.create')" :active="request()->routeIs('books.create')">
                         ➕ Agregar Libro
