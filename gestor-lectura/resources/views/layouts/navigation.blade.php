@@ -28,6 +28,10 @@
                         📝 Notas
                     </x-nav-link>
 
+                    <x-nav-link :href="route('report.index')" :active="request()->routeIs('report.*')">
+                        📊 Reporte
+                    </x-nav-link>
+
                     @if(auth()->user()->isAdmin())
                     <x-nav-link :href="route('books.create')" :active="request()->routeIs('books.create')">
                         ➕ Agregar Libro

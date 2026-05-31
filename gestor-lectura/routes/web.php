@@ -18,6 +18,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
@@ -27,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
     Route::middleware('role:admin')->group(function () {
-        Route::get('/books/create',      [BookController::class, 'create'])->name('books.create'); // 👈 antes de {book}
+        Route::get('/books/create',      [BookController::class, 'create'])->name('books.create'); 
         Route::post('/books',            [BookController::class, 'store'])->name('books.store');
         Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
         Route::put('/books/{book}',      [BookController::class, 'update'])->name('books.update');
@@ -38,11 +39,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/users/{user}',   [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show'); // 👈 al final
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show'); 
 
     Route::resource('progress', ReadingProgressController::class)->except(['show']);
 
     Route::resource('notes', NoteController::class)->except(['show']);
 
-require __DIR__ . '/auth.php';
+
 });
+
+require __DIR__ . '/auth.php';
